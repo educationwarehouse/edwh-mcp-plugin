@@ -25,7 +25,7 @@ dependencies = [
   "edwh >= 1.23",  # EDWH_RESULT_FILE, require_virtualenv, SudoRequired
   "mcp>=1.10,<2",
 ]
-version = "0.1.0"
+version = "0.1.1"
 
 [project.optional-dependencies]
 dev = [

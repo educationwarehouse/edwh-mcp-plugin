@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.1 (2026-11-19)
+
+### Fix
+* **mcp:** restore session environment for task subprocesses
+
 ## v0.1.0 (2026-11-19)
 
 ### Feature
