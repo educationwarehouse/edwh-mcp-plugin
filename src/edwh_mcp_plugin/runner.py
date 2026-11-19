@@ -19,6 +19,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
+from .session_env import session_env
+
 # CSI sequences (colors, cursor movement), OSC sequences (titles, hyperlinks) and other two-byte escapes.
 ANSI_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\x1b[@-Z\\-_]")
 
@@ -131,6 +133,9 @@ class RunResult:
 
 def subprocess_env(result_file: Path) -> dict[str, str]:
     env = dict(os.environ)
+    # MCP clients often start us without SSH_AUTH_SOCK / DBUS_SESSION_BUS_ADDRESS; without them edwh can't read the
+    # sudo password from the keyring and reports `sudo_required`, even after `edwh sudo`.
+    env.update(session_env(env))
     env.update(
         {
             "EDWH_INPUT_MODE": "defaults",
@@ -178,6 +183,8 @@ async def run_edwh(
     result_file = Path(result_name)
 
     command = [str(executable), task, *args]
+    # probing ssh-agent sockets is blocking I/O:
+    env = await asyncio.to_thread(subprocess_env, result_file)
     started = time.monotonic()
 
     try:
@@ -189,7 +196,7 @@ async def run_edwh(
             proc = await asyncio.create_subprocess_exec(
                 *command,
                 cwd=cwd,
-                env=subprocess_env(result_file),
+                env=env,
                 stdin=asyncio.subprocess.DEVNULL,
                 stdout=log,
                 stderr=asyncio.subprocess.STDOUT,

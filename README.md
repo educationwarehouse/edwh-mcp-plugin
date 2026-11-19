@@ -75,6 +75,12 @@ end up in the model's context. Instead, store the sudo password in your keyring 
 edwh sudo
 ```
 
+MCP clients that run as a daemon (e.g. Codex' app server) often start `edwh mcp` without your session's
+`SSH_AUTH_SOCK` or `DBUS_SESSION_BUS_ADDRESS`, which edwh needs to read that password back. The plugin fills these in
+for the task subprocess: a missing D-Bus address from `$XDG_RUNTIME_DIR/bus`, and, when edwh's ssh-agent keyring is
+configured, the first agent socket (`~/.ssh/agent.sock`, `$XDG_RUNTIME_DIR/gcr/ssh`, `/tmp/ssh-*/agent.*`, ...) that
+actually holds the configured key.
+
 When a task still reports `sudo_required`, the plugin asks **you** (not the model) through an MCP elicitation, if the
 client supports it: a plain confirm, no password field. After you ran `edwh sudo` and confirmed, it retries once.
 Otherwise (no elicitation support, declined, or the retry still failed) the agent gets an error whose hint tells it to

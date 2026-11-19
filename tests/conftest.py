@@ -126,6 +126,9 @@ def fake_edwh(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     monkeypatch.setenv("FAKE_EDWH_CALLS", str(tmp_path / "calls.jsonl"))
     monkeypatch.setenv("FAKE_EDWH_SCENARIO", "success")
     monkeypatch.delenv("EDWH_RESULT_FILE", raising=False)
+    # don't probe the real ssh-agents / keyring config of whoever runs the tests:
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path / "run"))
     # keep logs inside tmp_path; tempfile caches gettempdir(), so reset it.
     (tmp_path / "tmp").mkdir()
     monkeypatch.setenv("TMPDIR", str(tmp_path / "tmp"))
