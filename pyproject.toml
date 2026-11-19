@@ -1,0 +1,127 @@
+[build-system]
+requires = ["uv_build>=0.12.4,<0.13"]
+build-backend = "uv_build"
+
+[project]
+name = "edwh-mcp-plugin"
+description = "Expose a small, safe set of `edwh` tasks to coding agents over MCP (stdio)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+keywords = ["edwh", "mcp", "agents"]
+authors = [
+  { name = "Robin van der Noord", email = "robin.vdn@educationwarehouse.nl" },
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+dependencies = [
+  "edwh >= 1.23",  # EDWH_RESULT_FILE, require_virtualenv, SudoRequired
+  "mcp>=1.10,<2",
+]
+version = "0.1.0"
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-asyncio",
+  "ruff",
+  "ty",
+]
+
+[project.urls]
+Documentation = "https://github.com/educationwarehouse/edwh-mcp-plugin#readme"
+Issues = "https://github.com/educationwarehouse/edwh-mcp-plugin/issues"
+Source = "https://github.com/educationwarehouse/edwh-mcp-plugin"
+
+# https://packaging.python.org/en/latest/guides/creating-and-discovering-plugins/#using-package-metadata
+[project.entry-points."edwh.tasks"]
+mcp = "edwh_mcp_plugin.mcp_plugin"
+
+[tool.vommit]
+allow_breaking_bang = true
+allow_breaking_footer = true
+prerelease_token = "beta"
+confirm = true
+ignore = []
+
+[tool.vommit.git]
+enabled = true
+origin = "origin"
+branch = "master"
+on_wrong_branch = "error"
+tag_format = "v{version}"
+commit_format = "{version}"
+
+[tool.vommit.changelog]
+enabled = true
+file = "CHANGELOG.md"
+include_prereleases = false
+placeholder = "<!--next-version-placeholder-->"
+placeholder_regex = "<auto>"
+entry_title_format = "## v{version} ({date:%Y-%m-%d})"
+
+[tool.vommit.changelog.levels]
+feat = "Feature{s}"
+fix = "Fix{es}"
+break = "Breaking Change{s}"
+docs = "Documentation"
+perf = "Performance"
+
+[tool.vommit.pypi]
+enabled = true
+use_keyring = true
+
+[tool.vommit.commands]
+clean = "rm -rf ./dist"
+build = "uv build"
+publish = "uv publish"
+post_publish = ""
+
+[tool.vommit.version_bump_map]
+break = "major"
+build = "patch"
+chore = "patch"
+feat = "minor"
+fix = "patch"
+perf = "patch"
+refactor = "patch"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+    "F", # pyflake error
+    "E", # pycodestyle error
+    "W", # pycodestyle warning
+    "Q", # quotes
+    "A", # builtins
+    "SIM", # simplify
+    "ARG", # unused arguments
+    "RUF", # ruff rules
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["edwh_mcp_plugin"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = ["PLR2004", "S101", "TID252"]
