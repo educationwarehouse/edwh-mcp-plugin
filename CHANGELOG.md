@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.1.0 (2026-11-19)
+
+### Feature
+* **mcp:** add edwh task server for coding agents
+
 ## v0.1.0 (unreleased)
 
 ### Features
